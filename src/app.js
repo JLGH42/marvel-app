@@ -15,6 +15,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
+//connect to db first
+require('./db/mongoose');
+const userRoute = require("./routes/user");
+
+app.use("/users", userRoute);
+
 app.listen(server_port, () => {
-  console.log(`Server Listening at 127.0.0.1:${port}`);
+  console.log(`Server Listening at 127.0.0.1:${server_port}`);
 });
