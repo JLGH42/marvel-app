@@ -15,6 +15,15 @@ router.post("/register", async (req, res) => {
   }
 });
 
+router.post("/login", async (req, res) => {
+  try {
+    const user = await User.findByCredentials(req.body.email, req.body.password);
+    res.send(user);
+  } catch (error) {
+    res.status(400).send({error: "Unable to login"})
+  }
+});
+
 router.get("/:id", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
