@@ -5,10 +5,10 @@ const User = require("../model/usersSchema");
 
 router.post("/register", async (req, res) => {
   try {
-    const newUser = new User({
+    const user = new User({
       ...req.body,
     });
-    await newUser.save();
+    await user.save();
     res.send("New User Created").status(201);
   } catch (error) {
     res.status(400).send(error);
@@ -17,9 +17,9 @@ router.post("/register", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   try {
-    const existingUser = await User.findById(req.params.id);
-    if (!existingUser) return res.status(400).send({ error: "No user found" });
-    res.status(200).send(existingUser);
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).send({ error: "No user found" });
+    res.status(200).send(user);
   } catch (error) {
     res.status(400).send(error);
   }
@@ -33,14 +33,14 @@ router.patch("/:id", async (req, res) => {
   if (!isUpdate) return res.status(400).send({ error: "Cannot update field" });
 
   try {
-    const foundUser = await User.findByIdAndUpdate(req.params.id, req.body, {
+    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
     });
-    if (!foundUser) {
+    if (!user) {
       return res.status(404).send("No user found");
     }
-    res.status(200).send(foundUser);
+    res.status(200).send(user);
   } catch (error) {
     res.status(400).send(error);
   }
@@ -48,7 +48,7 @@ router.patch("/:id", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
   const user = await User.findByIdAndDelete(req.params.id);
-  if (!user) return res.status(400).send({ error: "No user found" });
+  if (!user) return res.status(404).send({ error: "No user found" });
   res.status(200).send(user);
 });
 
