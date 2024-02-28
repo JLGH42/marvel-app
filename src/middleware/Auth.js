@@ -12,6 +12,7 @@ const Auth = async (req, res, next) => {
     });
     if (!user) throw new Error();
     req.user = user;
+    req.token = token;
     next();
   } catch (error) {
     res.status(401).send({ error: "Unauthorised" });
