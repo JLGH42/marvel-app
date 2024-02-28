@@ -2,14 +2,16 @@ const express = require("express");
 const router = express.Router();
 
 const User = require("../model/usersSchema");
+const Auth = require("../middleware/Auth");
 
 router.post("/register", async (req, res) => {
   try {
     const user = new User({
       ...req.body,
     });
+    const token = await user.generateAuthToken();
     await user.save();
-    res.send("New User Created").status(201);
+    res.send({ user, token }).status(201);
   } catch (error) {
     res.status(400).send(error);
   }
@@ -17,12 +19,17 @@ router.post("/register", async (req, res) => {
 
 router.post("/login", async (req, res) => {
   try {
-    const user = await User.findByCredentials(req.body.email, req.body.password);
-    res.send(user);
+    const user = await User.findByCredentials(
+      req.body.email,
+      req.body.password
+    );
+    const token = await user.generateAuthToken();
+    res.status(200).send({ user, token });
   } catch (error) {
-    res.status(400).send({error: "Unable to login"})
+    res.status(400).send({ error: "Unable to login" });
   }
 });
+
 
 router.get("/:id", async (req, res) => {
   try {
