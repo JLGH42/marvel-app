@@ -30,13 +30,8 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.get("/", Auth, async (req, res) => {
-  try {
-    const users = await User.find({});
-    res.status(200).send(users);
-  } catch (error) {
-    res.status(400).send(error);
-  }
+router.get("/profile", Auth, async (req, res) => {
+  res.send(req.user);
 });
 
 router.get("/:id", async (req, res) => {
