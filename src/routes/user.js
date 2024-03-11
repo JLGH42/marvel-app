@@ -56,9 +56,9 @@ router.get("/profile", Auth, async (req, res) => {
   res.send(req.user);
 });
 
-router.get("/:id", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findById(req.body.id);
     if (!user) return res.status(404).send({ error: "No user found" });
     res.status(200).send(user);
   } catch (error) {
@@ -66,7 +66,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.patch("/:id", async (req, res) => {
+router.patch("/", Auth, async (req, res) => {
   const updates = Object.keys(req.body);
   const possibleUpdates = ["username", "email"];
   const isUpdate = updates.every((update) => possibleUpdates.includes(update));
@@ -74,13 +74,9 @@ router.patch("/:id", async (req, res) => {
   if (!isUpdate) return res.status(400).send({ error: "Cannot update field" });
 
   try {
-    const user = User.findById(req.params.id);
-    updates.forEach((update) => (user[update] = req.body[update]));
-    await user.save();
-    if (!user) {
-      return res.status(404).send("No user found");
-    }
-    res.status(200).send(user);
+    updates.forEach((update) => (req.user[update] = req.body[update]));
+    await req.user.save();
+    res.status(200).send(req.user);
   } catch (error) {
     res.status(400).send(error);
   }
