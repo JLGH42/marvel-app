@@ -67,7 +67,7 @@ router.get("/:id", async (req, res) => {
 });
 
 router.patch("/:id", async (req, res) => {
-  const updates = Object.keys(req.body); //convert to an array
+  const updates = Object.keys(req.body);
   const possibleUpdates = ["username", "email"];
   const isUpdate = updates.every((update) => possibleUpdates.includes(update));
 
@@ -86,10 +86,13 @@ router.patch("/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
-  const user = await User.findByIdAndDelete(req.params.id);
-  if (!user) return res.status(404).send({ error: "No user found" });
-  res.status(200).send(user);
+router.delete("/delete/me", Auth, async (req, res) => {
+  try {
+    await req.user.remove();
+    res.status(200).send(req.user);
+  } catch (error) {
+    res.status(401).send();
+  }
 });
 
 module.exports = router;
